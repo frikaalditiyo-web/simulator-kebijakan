@@ -171,40 +171,95 @@ st.markdown(
         background: linear-gradient(90deg, var(--red), var(--yellow), var(--green));
     }
 
-    .track-map {
-        height: 188px;
+    .policy-map {
+        height: 210px;
         position: relative;
         border-radius: 12px;
         background:
-            radial-gradient(ellipse at center, transparent 38%, rgba(255,255,255,0.12) 39%, rgba(255,255,255,0.12) 43%, transparent 44%),
-            linear-gradient(135deg, #151d2a, #0d121b);
+            linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px) 0 0 / 25% 100%,
+            linear-gradient(0deg, rgba(255,255,255,0.08) 1px, transparent 1px) 0 0 / 100% 25%,
+            radial-gradient(circle at var(--point-x) var(--point-y), rgba(255,47,69,0.28), transparent 18%),
+            linear-gradient(135deg, rgba(255,47,69,0.12), rgba(56,213,255,0.10)),
+            #101725;
         border: 1px solid var(--line);
         overflow: hidden;
     }
 
-    .track-map:before {
-        content: "BASE";
+    .policy-map:before,
+    .policy-map:after {
+        content: "";
         position: absolute;
-        left: 28px;
-        bottom: 24px;
-        color: #0b1018;
-        background: var(--text);
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 0.65rem;
-        font-weight: 900;
+        background: rgba(242,246,251,0.28);
     }
 
-    .car-dot {
+    .policy-map:before {
+        left: 50%;
+        top: 12px;
+        bottom: 28px;
+        width: 1px;
+    }
+
+    .policy-map:after {
+        left: 28px;
+        right: 12px;
+        bottom: 50%;
+        height: 1px;
+    }
+
+    .policy-point {
         position: absolute;
-        left: calc(var(--car-x) * 1%);
-        top: calc(var(--car-y) * 1%);
-        width: 16px;
-        height: 16px;
+        left: var(--point-x);
+        top: var(--point-y);
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
+        transform: translate(-50%, -50%);
         background: var(--red);
         border: 3px solid #ffffff;
-        box-shadow: 0 0 22px rgba(255,47,69,0.8);
+        box-shadow: 0 0 0 8px rgba(255,47,69,0.14), 0 0 28px rgba(255,47,69,0.75);
+        z-index: 2;
+    }
+
+    .policy-label {
+        position: absolute;
+        color: var(--muted);
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        z-index: 1;
+    }
+
+    .policy-label.left { left: 12px; bottom: 49%; }
+    .policy-label.right { right: 12px; bottom: 49%; color: var(--cyan); }
+    .policy-label.bottom { left: 42%; bottom: 8px; }
+    .policy-label.top { left: 42%; top: 10px; color: var(--yellow); }
+
+    .policy-readout {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .policy-readout-item {
+        background: rgba(255,255,255,0.045);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 8px;
+        padding: 10px 12px;
+    }
+
+    .policy-readout-label {
+        color: var(--muted);
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .policy-readout-value {
+        color: var(--text);
+        font-size: 1rem;
+        font-weight: 900;
+        margin-top: 4px;
     }
 
     .strategy-list {
@@ -388,8 +443,8 @@ variabel_dominan = "Anggaran Iklan" if koef_iklan > koef_diskon else "Besaran Di
 
 performance_score = clamp(((hasil_pred - 30) / 130) * 100, 0, 100)
 delta_score = clamp(((delta + 35) / 70) * 100, 0, 100)
-car_x = clamp(18 + (iklan_slider / 50) * 62, 10, 84)
-car_y = clamp(70 - (diskon_slider / 50) * 45, 18, 78)
+policy_x = clamp(12 + (iklan_slider / 50) * 78, 10, 92)
+policy_y = clamp(88 - (diskon_slider / 50) * 76, 10, 90)
 
 
 st.markdown(
@@ -474,12 +529,26 @@ with track_col:
     st.markdown(
         f"""
         <div class="gauge-card">
-            <div class="card-title">Peta Posisi Skenario</div>
-            <div class="track-map" style="--car-x:{car_x:.1f}; --car-y:{car_y:.1f};">
-                <div class="car-dot"></div>
+            <div class="card-title">Profil Kebijakan</div>
+            <div class="policy-map" style="--point-x:{policy_x:.1f}%; --point-y:{policy_y:.1f}%;">
+                <div class="policy-label left">Iklan rendah</div>
+                <div class="policy-label right">Iklan tinggi</div>
+                <div class="policy-label bottom">Diskon rendah</div>
+                <div class="policy-label top">Diskon tinggi</div>
+                <div class="policy-point"></div>
+            </div>
+            <div class="policy-readout">
+                <div class="policy-readout-item">
+                    <div class="policy-readout-label">Iklan</div>
+                    <div class="policy-readout-value">Rp {iklan_slider} Jt</div>
+                </div>
+                <div class="policy-readout-item">
+                    <div class="policy-readout-label">Diskon</div>
+                    <div class="policy-readout-value">{diskon_slider}%</div>
+                </div>
             </div>
             <div style="color:#9aa8b8; font-size:0.76rem; margin-top:10px;">
-                Posisi mobil berubah sesuai kombinasi iklan dan diskon.
+                Titik merah menunjukkan kombinasi kebijakan aktif.
             </div>
         </div>
         """,
