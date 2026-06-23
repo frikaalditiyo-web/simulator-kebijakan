@@ -5,8 +5,8 @@ import streamlit as st
 
 
 st.set_page_config(
-    page_title="Racing Policy Simulator | Frika Alditiyo",
-    page_icon="🏁",
+    page_title="Policy Simulator | Frika Alditiyo",
+    page_icon="📊",
     layout="wide",
 )
 
@@ -182,7 +182,7 @@ st.markdown(
     }
 
     .track-map:before {
-        content: "START";
+        content: "BASE";
         position: absolute;
         left: 28px;
         bottom: 24px;
@@ -319,12 +319,12 @@ def clamp(value, minimum, maximum):
 
 def delta_status(value):
     if value > 5:
-        return "Green Flag", "#25d366"
+        return "Sangat Baik", "#25d366"
     if value > 0:
-        return "Push Mode", "#f7c843"
+        return "Positif", "#f7c843"
     if value == 0:
-        return "Neutral Pace", "#9aa8b8"
-    return "Pit Warning", "#ff2f45"
+        return "Netral", "#9aa8b8"
+    return "Perlu Evaluasi", "#ff2f45"
 
 
 # SIDEBAR
@@ -332,22 +332,22 @@ with st.sidebar:
     st.markdown(
         """
         <div style="padding: 18px 0 12px 0;">
-            <div style="font-size:2.8rem; font-weight:900; color:#ff2f45; line-height:1;">R01</div>
-            <div style="color:#f2f6fb; font-weight:900; font-size:1rem; margin-top:6px;">FRIKA RACING</div>
-            <div style="color:#9aa8b8; font-size:0.75rem;">Policy Strategy Team</div>
+            <div style="font-size:2.8rem; font-weight:900; color:#ff2f45; line-height:1;">SIM</div>
+            <div style="color:#f2f6fb; font-weight:900; font-size:1rem; margin-top:6px;">FRIKA ALDITIYO</div>
+            <div style="color:#9aa8b8; font-size:0.75rem;">Dashboard Simulasi Kebijakan</div>
         </div>
         <hr style="border-color:#2a3547; margin: 8px 0 18px 0;">
         """,
         unsafe_allow_html=True,
     )
 
-    st.markdown("#### Race Controls")
+    st.markdown("#### Pengaturan Simulasi")
     iklan_slider = st.slider("Anggaran Iklan (Juta Rp)", 0, 50, 10)
     diskon_slider = st.slider("Besaran Diskon (%)", 0, 50, 10)
 
     st.markdown("<hr style='border-color:#2a3547;'>", unsafe_allow_html=True)
     st.caption("Baseline: iklan Rp 10 Jt dan diskon 10%.")
-    st.caption("Gunakan slider seperti strategi pit wall untuk melihat dampak keputusan.")
+    st.caption("Gunakan slider untuk melihat dampak perubahan kebijakan.")
 
 
 # ENGINE
@@ -367,9 +367,9 @@ car_y = clamp(70 - (diskon_slider / 50) * 45, 18, 78)
 st.markdown(
     """
 <div class="race-hero">
-    <span class="status-badge">Race Strategy Simulator</span>
+    <span class="status-badge">Policy Simulator</span>
     <h1>Kebijakan Keuntungan Toko</h1>
-    <p>Dashboard what-if bertema racing team untuk membaca dampak anggaran iklan dan diskon terhadap prediksi keuntungan.</p>
+    <p>Dashboard what-if untuk membaca dampak anggaran iklan dan diskon terhadap prediksi keuntungan dengan tampilan modern dan kontras.</p>
 </div>
 """,
     unsafe_allow_html=True,
@@ -379,22 +379,22 @@ st.markdown(
     f"""
 <div class="race-strip">
     <div class="race-tile">
-        <div class="tile-label">Driver</div>
+        <div class="tile-label">Nama</div>
         <div class="tile-value">Frika</div>
         <div class="tile-sub">NPM 2313020008</div>
     </div>
     <div class="race-tile">
-        <div class="tile-label">Race Status</div>
+        <div class="tile-label">Status Skenario</div>
         <div class="tile-value" style="color:{status_color};">{status_label}</div>
         <div class="tile-sub">Berdasarkan delta profit</div>
     </div>
     <div class="race-tile">
-        <div class="tile-label">Dominant Lever</div>
+        <div class="tile-label">Variabel Dominan</div>
         <div class="tile-value">{variabel_dominan}</div>
         <div class="tile-sub">Koefisien terbesar</div>
     </div>
     <div class="race-tile">
-        <div class="tile-label">Performance</div>
+        <div class="tile-label">Indeks Hasil</div>
         <div class="tile-value">{performance_score:.0f}/100</div>
         <div class="tile-sub">Indeks visual skenario</div>
     </div>
@@ -417,13 +417,13 @@ with gauge_col:
     st.markdown(
         f"""
         <div class="gauge-card">
-            <div class="card-title">Telemetry Board</div>
+            <div class="card-title">Ringkasan Kinerja</div>
             <div style="display:flex; justify-content:space-between; gap:12px; color:#f2f6fb; font-weight:900; margin-bottom:8px;">
-                <span>Profit Pace</span><span>{performance_score:.1f}%</span>
+                <span>Potensi Profit</span><span>{performance_score:.1f}%</span>
             </div>
             <div class="speedbar"><div class="speedbar-fill" style="width:{performance_score:.1f}%;"></div></div>
             <div style="display:flex; justify-content:space-between; gap:12px; color:#f2f6fb; font-weight:900; margin:18px 0 8px 0;">
-                <span>Delta Momentum</span><span>{delta_score:.1f}%</span>
+                <span>Skor Delta</span><span>{delta_score:.1f}%</span>
             </div>
             <div class="speedbar"><div class="speedbar-fill" style="width:{delta_score:.1f}%;"></div></div>
         </div>
@@ -446,7 +446,7 @@ with track_col:
     st.markdown(
         f"""
         <div class="gauge-card">
-            <div class="card-title">Strategy Track Map</div>
+            <div class="card-title">Peta Posisi Skenario</div>
             <div class="track-map" style="--car-x:{car_x:.1f}; --car-y:{car_y:.1f};">
                 <div class="car-dot"></div>
             </div>
@@ -487,7 +487,7 @@ with col_tabel:
     st.markdown(
         f"""
         <div class="result-card">
-            <div class="card-title">Model Garage</div>
+            <div class="card-title">Info Model</div>
             <div style="color:#d8e3ef; font-size:0.88rem; line-height:1.7;">
                 Algoritma: <b>Linear Regression</b><br>
                 Fitur: Iklan, Diskon<br>
@@ -501,7 +501,7 @@ with col_tabel:
 
 
 # SENSITIVITY SWEEP
-st.markdown("#### Race Telemetry: Analisis Sensitivitas")
+st.markdown("#### Analisis Sensitivitas")
 
 col_s1, col_s2 = st.columns(2)
 
@@ -534,15 +534,15 @@ with col_s2:
     )
 
 
-# FEATURE TAMBAHAN: STRATEGY SCOUT
-st.markdown("#### Strategy Scout")
+# FEATURE TAMBAHAN: PERBANDINGAN SKENARIO
+st.markdown("#### Perbandingan Alternatif Skenario")
 scenario_grid = []
 for iklan_candidate, diskon_candidate, label in [
-    (10, 10, "Baseline setup"),
-    (20, 10, "Push iklan"),
-    (10, 20, "Push diskon"),
-    (25, 15, "Balanced attack"),
-    (35, 8, "Aggressive ads"),
+    (10, 10, "Baseline"),
+    (20, 10, "Naikkan iklan"),
+    (10, 20, "Naikkan diskon"),
+    (25, 15, "Kombinasi seimbang"),
+    (35, 8, "Iklan agresif"),
 ]:
     pred_candidate, delta_candidate = run_simulation(iklan_candidate, diskon_candidate)
     scenario_grid.append(
@@ -574,28 +574,28 @@ with plan_col:
     st.markdown(
         f"""
         <div class="strategy-card">
-            <div class="card-title">Pit Wall Plan</div>
+            <div class="card-title">Ringkasan Rekomendasi</div>
             <div class="strategy-list">
                 <div class="strategy-row">
-                    <div class="lap">L1</div>
+                    <div class="lap">1</div>
                     <div>
-                        <div class="row-title">Current setup</div>
+                        <div class="row-title">Skenario saat ini</div>
                         <div class="row-note">Iklan Rp {iklan_slider} Jt, diskon {diskon_slider}%</div>
                     </div>
                     <div class="row-score">Rp {hasil_pred:.1f}</div>
                 </div>
                 <div class="strategy-row">
-                    <div class="lap">L2</div>
+                    <div class="lap">2</div>
                     <div>
-                        <div class="row-title">Best scout</div>
+                        <div class="row-title">Alternatif terbaik</div>
                         <div class="row-note">{best_setup["Setup"]}: iklan Rp {best_setup["Iklan"]} Jt, diskon {best_setup["Diskon"]}%</div>
                     </div>
                     <div class="row-score">Rp {best_setup["Prediksi"]:.1f}</div>
                 </div>
                 <div class="strategy-row">
-                    <div class="lap">L3</div>
+                    <div class="lap">3</div>
                     <div>
-                        <div class="row-title">Focus lever</div>
+                        <div class="row-title">Fokus evaluasi</div>
                         <div class="row-note">Variabel paling sensitif dari model</div>
                     </div>
                     <div class="row-score">{variabel_dominan}</div>
@@ -654,7 +654,7 @@ st.markdown(
 st.markdown(
     """
     <div class="footer">
-        Frika Racing Policy Team - Praktikum Pemodelan & Simulasi Minggu 14
+        Frika Alditiyo - Praktikum Pemodelan & Simulasi Minggu 14
     </div>
     """,
     unsafe_allow_html=True,
