@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 from sklearn.linear_model import LinearRegression
 import streamlit as st
 
@@ -327,6 +328,33 @@ def delta_status(value):
     return "Perlu Evaluasi", "#ff2f45"
 
 
+def apply_chart_theme(fig, height=320):
+    fig.update_layout(
+        height=height,
+        margin=dict(l=12, r=12, t=24, b=12),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#d8e3ef", family="Arial"),
+        hovermode="x unified",
+        showlegend=False,
+    )
+    fig.update_xaxes(
+        showgrid=False,
+        zeroline=False,
+        linecolor="rgba(255,255,255,0.12)",
+        tickfont=dict(color="#9aa8b8"),
+        title_font=dict(color="#9aa8b8"),
+    )
+    fig.update_yaxes(
+        gridcolor="rgba(255,255,255,0.08)",
+        zeroline=False,
+        linecolor="rgba(255,255,255,0.12)",
+        tickfont=dict(color="#9aa8b8"),
+        title_font=dict(color="#9aa8b8"),
+    )
+    return fig
+
+
 # SIDEBAR
 with st.sidebar:
     st.markdown(
@@ -470,7 +498,28 @@ with col_chart:
             "Keuntungan (Juta)": [round(baseline_pred, 2), round(hasil_pred, 2)],
         }
     )
-    st.bar_chart(data=data_plot, x="Skenario", y="Keuntungan (Juta)", height=320)
+    comparison_fig = go.Figure()
+    comparison_fig.add_trace(
+        go.Scatter(
+            x=data_plot["Skenario"],
+            y=data_plot["Keuntungan (Juta)"],
+            mode="lines+markers+text",
+            line=dict(color="#38d5ff", width=4, shape="spline", smoothing=1.2),
+            marker=dict(
+                size=18,
+                color=["#9aa8b8", status_color],
+                line=dict(color="#f2f6fb", width=2),
+            ),
+            fill="tozeroy",
+            fillcolor="rgba(56, 213, 255, 0.16)",
+            text=[f"Rp {value:.2f} Jt" for value in data_plot["Keuntungan (Juta)"]],
+            textposition="top center",
+            hovertemplate="%{x}<br>Keuntungan: Rp %{y:.2f} Jt<extra></extra>",
+        )
+    )
+    comparison_fig = apply_chart_theme(comparison_fig, height=320)
+    comparison_fig.update_yaxes(title_text="Keuntungan (Juta)")
+    st.plotly_chart(comparison_fig, use_container_width=True)
 
 with col_tabel:
     st.markdown("#### Ringkasan Input")
@@ -506,32 +555,70 @@ st.markdown("#### Analisis Sensitivitas")
 col_s1, col_s2 = st.columns(2)
 
 with col_s1:
-    sweep_iklan = np.arange(0, 51, 1)
+    sweep_iklan = np.linspace(0, 50, 101)
     pred_iklan = [model.predict(np.array([[i, diskon_slider]]))[0] for i in sweep_iklan]
     df_iklan = pd.DataFrame(
         {"Anggaran Iklan (Juta)": sweep_iklan, "Prediksi Keuntungan": pred_iklan}
     )
     st.caption("Efek perubahan iklan saat diskon tetap.")
-    st.line_chart(
-        df_iklan,
-        x="Anggaran Iklan (Juta)",
-        y="Prediksi Keuntungan",
-        height=240,
+    iklan_fig = go.Figure()
+    iklan_fig.add_trace(
+        go.Scatter(
+            x=df_iklan["Anggaran Iklan (Juta)"],
+            y=df_iklan["Prediksi Keuntungan"],
+            mode="lines",
+            line=dict(color="#ff2f45", width=4, shape="spline", smoothing=1.25),
+            fill="tozeroy",
+            fillcolor="rgba(255, 47, 69, 0.14)",
+            hovertemplate="Iklan: Rp %{x:.1f} Jt<br>Prediksi: Rp %{y:.2f} Jt<extra></extra>",
+        )
     )
+    iklan_fig.add_trace(
+        go.Scatter(
+            x=[iklan_slider],
+            y=[hasil_pred],
+            mode="markers",
+            marker=dict(size=16, color="#f7c843", line=dict(color="#f2f6fb", width=2)),
+            hovertemplate="Skenario aktif<br>Rp %{x:.1f} Jt<br>Rp %{y:.2f} Jt<extra></extra>",
+        )
+    )
+    iklan_fig = apply_chart_theme(iklan_fig, height=250)
+    iklan_fig.update_xaxes(title_text="Anggaran Iklan (Juta)")
+    iklan_fig.update_yaxes(title_text="Prediksi Keuntungan")
+    st.plotly_chart(iklan_fig, use_container_width=True)
 
 with col_s2:
-    sweep_diskon = np.arange(0, 51, 1)
+    sweep_diskon = np.linspace(0, 50, 101)
     pred_diskon = [model.predict(np.array([[iklan_slider, d]]))[0] for d in sweep_diskon]
     df_diskon = pd.DataFrame(
         {"Besaran Diskon (%)": sweep_diskon, "Prediksi Keuntungan": pred_diskon}
     )
     st.caption("Efek perubahan diskon saat iklan tetap.")
-    st.line_chart(
-        df_diskon,
-        x="Besaran Diskon (%)",
-        y="Prediksi Keuntungan",
-        height=240,
+    diskon_fig = go.Figure()
+    diskon_fig.add_trace(
+        go.Scatter(
+            x=df_diskon["Besaran Diskon (%)"],
+            y=df_diskon["Prediksi Keuntungan"],
+            mode="lines",
+            line=dict(color="#25d366", width=4, shape="spline", smoothing=1.25),
+            fill="tozeroy",
+            fillcolor="rgba(37, 211, 102, 0.14)",
+            hovertemplate="Diskon: %{x:.1f}%<br>Prediksi: Rp %{y:.2f} Jt<extra></extra>",
+        )
     )
+    diskon_fig.add_trace(
+        go.Scatter(
+            x=[diskon_slider],
+            y=[hasil_pred],
+            mode="markers",
+            marker=dict(size=16, color="#f7c843", line=dict(color="#f2f6fb", width=2)),
+            hovertemplate="Skenario aktif<br>%{x:.1f}%<br>Rp %{y:.2f} Jt<extra></extra>",
+        )
+    )
+    diskon_fig = apply_chart_theme(diskon_fig, height=250)
+    diskon_fig.update_xaxes(title_text="Besaran Diskon (%)")
+    diskon_fig.update_yaxes(title_text="Prediksi Keuntungan")
+    st.plotly_chart(diskon_fig, use_container_width=True)
 
 
 # FEATURE TAMBAHAN: PERBANDINGAN SKENARIO
