@@ -6,7 +6,7 @@ import streamlit as st
 
 
 st.set_page_config(
-    page_title="Policy Simulator | Frika Alditiyo",
+    page_title="Simulator | Frika Alditiyo",
     page_icon="📊",
     layout="wide",
 )
@@ -452,7 +452,7 @@ st.markdown(
 <div class="race-hero">
     <span class="status-badge">Policy Simulator</span>
     <h1>Kebijakan Keuntungan Toko</h1>
-    <p>Dashboard what-if untuk membaca dampak anggaran iklan dan diskon terhadap prediksi keuntungan dengan tampilan modern dan kontras.</p>
+    <p>Dashboard what-if untuk membaca dampak anggaran iklan dan diskon terhadap prediksi keuntungan.</p>
 </div>
 """,
     unsafe_allow_html=True,
@@ -804,14 +804,5 @@ st.markdown(
     <p style="color:#d8e3ef; margin:0;"><b>Rekomendasi:</b> {rekomendasi}</p>
 </div>
 """,
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    """
-    <div class="footer">
-        Frika Alditiyo - Praktikum Pemodelan & Simulasi Minggu 14
-    </div>
-    """,
     unsafe_allow_html=True,
 )
