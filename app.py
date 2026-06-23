@@ -450,7 +450,7 @@ policy_y = clamp(88 - (diskon_slider / 50) * 76, 10, 90)
 st.markdown(
     """
 <div class="race-hero">
-    <span class="status-badge">Policy Simulator</span>
+    <span class="status-badge">Simulator</span>
     <h1>Kebijakan Keuntungan Toko</h1>
     <p>Dashboard what-if untuk membaca dampak anggaran iklan dan diskon terhadap prediksi keuntungan.</p>
 </div>
@@ -463,7 +463,7 @@ st.markdown(
 <div class="race-strip">
     <div class="race-tile">
         <div class="tile-label">Nama</div>
-        <div class="tile-value">Frika</div>
+        <div class="tile-value">Frika Alditiyo</div>
         <div class="tile-sub">NPM 2313020008</div>
     </div>
     <div class="race-tile">
